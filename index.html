@@ -256,105 +256,46 @@ header p {
 
 <script>
 const VIDEO_PASSWORD = "sbv123";
-const FREE_TIME = 10;
-
-let player = null;
-let unlocked = false;
-let checkTimer = null;
 
 function setActive(el) {
-  document.querySelectorAll(".part-title").forEach(e => {
-    e.classList.remove("active");
-  });
+  document.querySelectorAll(".part-title").forEach(e => e.classList.remove("active"));
   el.classList.add("active");
 }
 
 function clearActive() {
-  document.querySelectorAll(".part-title").forEach(el => {
-    el.classList.remove("active");
-  });
+  document.querySelectorAll(".part-title").forEach(el => el.classList.remove("active"));
 }
 
-function openYouTube(el, videoId, title) {
-  setActive(el);
-  unlocked = false;
+function openYouTube(el, id, title) {
+  let pass = prompt("Please enter password to watch this lesson:");
 
-  document.getElementById("videoTitle").textContent = title;
-  document.getElementById("videoModal").style.display = "flex";
-  document.getElementById("youtubePlayer").innerHTML = "";
-
-  clearInterval(checkTimer);
-
-  if (player) {
-    try {
-      player.destroy();
-    } catch(e) {}
+  if (pass !== VIDEO_PASSWORD) {
+    alert("Wrong password!");
+    return;
   }
 
-  player = new YT.Player("youtubePlayer", {
-    height: "500",
-    width: "100%",
-    videoId: videoId,
-    playerVars: {
-      autoplay: 1,
-      rel: 0,
-      controls: 1
-    },
-    events: {
-      onReady: function(event) {
-        event.target.playVideo();
-        startChecking();
-      }
-    }
-  });
-}
+  setActive(el);
 
-function startChecking() {
-  checkTimer = setInterval(function() {
-    if (!player || unlocked) return;
+  document.getElementById("videoTitle").textContent = title;
 
-    try {
-      let time = player.getCurrentTime();
+  document.getElementById("youtubePlayer").innerHTML = `
+    <iframe
+      src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0"
+      allow="autoplay"
+      allowfullscreen>
+    </iframe>
+  `;
 
-      if (time >= FREE_TIME) {
-        player.pauseVideo();
-
-        let pass = prompt("Please enter password to continue watching:");
-
-        if (pass === VIDEO_PASSWORD) {
-          unlocked = true;
-          player.playVideo();
-        } else {
-          alert("Wrong password!");
-          player.seekTo(0);
-          player.pauseVideo();
-        }
-      }
-    } catch(e) {}
-  }, 500);
+  document.getElementById("videoModal").style.display = "flex";
 }
 
 function closeVideo() {
-  clearInterval(checkTimer);
-
-  if (player) {
-    try {
-      player.stopVideo();
-      player.destroy();
-    } catch(e) {}
-
-    player = null;
-  }
-
   document.getElementById("youtubePlayer").innerHTML = "";
   document.getElementById("videoModal").style.display = "none";
 }
 
 document.addEventListener("click", function(e) {
-  if (
-    !e.target.closest(".lesson") &&
-    !e.target.closest(".video-modal")
-  ) {
+  if (!e.target.closest(".lesson") && !e.target.closest(".video-modal")) {
     clearActive();
   }
 });
