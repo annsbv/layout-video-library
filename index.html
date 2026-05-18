@@ -252,25 +252,34 @@ header p {
   </div>
 </div>
 
-<script src="https://www.youtube.com/iframe_api"></script>
-
 <script>
+
 const VIDEO_PASSWORD = "sbv123";
 
 function setActive(el) {
-  document.querySelectorAll(".part-title").forEach(e => e.classList.remove("active"));
+  document.querySelectorAll(".part-title").forEach(e => {
+    e.classList.remove("active");
+  });
+
   el.classList.add("active");
 }
 
 function clearActive() {
-  document.querySelectorAll(".part-title").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".part-title").forEach(el => {
+    el.classList.remove("active");
+  });
 }
 
 function openYouTube(el, id, title) {
-  let pass = prompt("Please enter password to watch this lesson:");
+
+  const pass = prompt(
+    "Please enter password to watch this lesson:"
+  );
 
   if (pass !== VIDEO_PASSWORD) {
+
     alert("Wrong password!");
+
     return;
   }
 
@@ -280,7 +289,10 @@ function openYouTube(el, id, title) {
 
   document.getElementById("youtubePlayer").innerHTML = `
     <iframe
+      width="100%"
+      height="500"
       src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0"
+      frameborder="0"
       allow="autoplay"
       allowfullscreen>
     </iframe>
@@ -290,16 +302,23 @@ function openYouTube(el, id, title) {
 }
 
 function closeVideo() {
+
   document.getElementById("youtubePlayer").innerHTML = "";
+
   document.getElementById("videoModal").style.display = "none";
 }
 
 document.addEventListener("click", function(e) {
-  if (!e.target.closest(".lesson") && !e.target.closest(".video-modal")) {
+
+  if (
+    !e.target.closest(".lesson") &&
+    !e.target.closest(".video-modal")
+  ) {
     clearActive();
   }
-});
-</script>
 
+});
+
+</script>
 </body>
 </html>
