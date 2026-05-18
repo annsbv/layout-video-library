@@ -240,23 +240,19 @@ header p {
 
 <!-- MODAL -->
 <div id="videoModal" class="video-modal">
+
   <span class="close-btn" onclick="closeVideo()">&times;</span>
 
   <div class="modal-content">
+
     <h2 id="videoTitle"></h2>
 
-    <div id="playerContainer">
-      <iframe
-        id="youtubeFrame"
-        allow="autoplay"
-        allowfullscreen>
-      </iframe>
-    </div>
+    <div id="youtubePlayer"></div>
 
   </div>
+
 </div>
 
-<!-- YOUTUBE API -->
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
@@ -264,11 +260,12 @@ header p {
 const VIDEO_PASSWORD = "sbv123";
 const FREE_TIME = 30;
 
-let player;
+let player = null;
 let unlocked = false;
-let currentVideoId = "";
+let timer = null;
 
 function setActive(el) {
+
   document.querySelectorAll(".part-title").forEach(e => {
     e.classList.remove("active");
   });
@@ -277,45 +274,52 @@ function setActive(el) {
 }
 
 function clearActive() {
+
   document.querySelectorAll(".part-title").forEach(el => {
     el.classList.remove("active");
   });
 }
 
-function openYouTube(el, id, title) {
+function openYouTube(el, videoId, title) {
 
   setActive(el);
 
   unlocked = false;
-  currentVideoId = id;
 
   document.getElementById("videoTitle").textContent = title;
 
   document.getElementById("videoModal").style.display = "flex";
 
-  document.getElementById("youtubeFrame").src =
-    "https://www.youtube.com/embed/" + id +
-    "?enablejsapi=1&autoplay=1&rel=0";
+  document.getElementById("youtubePlayer").innerHTML = "";
 
-  setTimeout(createPlayer, 2000);
-}
+  player = new YT.Player('youtubePlayer', {
 
-function createPlayer() {
+    height: '500',
+    width: '100%',
 
-  player = new YT.Player('youtubeFrame', {
+    videoId: videoId,
+
+    playerVars: {
+      autoplay: 1,
+      rel: 0
+    },
 
     events: {
+      'onReady': onPlayerReady,
       'onStateChange': onPlayerStateChange
     }
 
   });
 }
 
-let timer = null;
+function onPlayerReady(event) {
+
+  event.target.playVideo();
+}
 
 function onPlayerStateChange(event) {
 
-  if (event.data == YT.PlayerState.PLAYING) {
+  if (event.data === YT.PlayerState.PLAYING) {
 
     clearTimeout(timer);
 
@@ -326,12 +330,13 @@ function onPlayerStateChange(event) {
         player.pauseVideo();
 
         let pass = prompt(
-          "This lesson is locked.\nPlease enter password:"
+          "Please enter password to continue watching:"
         );
 
         if (pass === VIDEO_PASSWORD) {
 
           unlocked = true;
+
           player.playVideo();
 
         } else {
@@ -346,16 +351,19 @@ function onPlayerStateChange(event) {
 
 function closeVideo() {
 
+  clearTimeout(timer);
+
   if (player) {
+
     try {
       player.stopVideo();
       player.destroy();
     } catch(err) {}
+
+    player = null;
   }
 
-  clearTimeout(timer);
-
-  document.getElementById("youtubeFrame").src = "";
+  document.getElementById("youtubePlayer").innerHTML = "";
 
   document.getElementById("videoModal").style.display = "none";
 }
@@ -372,6 +380,5 @@ document.addEventListener("click", function(e) {
 });
 
 </script>
-
 </body>
 </html>
