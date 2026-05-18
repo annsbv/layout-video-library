@@ -244,38 +244,131 @@ header p {
 
   <div class="modal-content">
     <h2 id="videoTitle"></h2>
-    <iframe id="youtubeFrame" allowfullscreen></iframe>
+
+    <div id="playerContainer">
+      <iframe
+        id="youtubeFrame"
+        allow="autoplay"
+        allowfullscreen>
+      </iframe>
+    </div>
+
   </div>
 </div>
 
+<!-- YOUTUBE API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
 <script>
+
+const VIDEO_PASSWORD = "sbv123";
+const FREE_TIME = 30;
+
+let player;
+let unlocked = false;
+let checkInterval = null;
+
 function setActive(el) {
-  document.querySelectorAll(".part-title").forEach(e => e.classList.remove("active"));
+  document.querySelectorAll(".part-title").forEach(e => {
+    e.classList.remove("active");
+  });
+
   el.classList.add("active");
 }
 
 function clearActive() {
-  document.querySelectorAll(".part-title").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".part-title").forEach(el => {
+    el.classList.remove("active");
+  });
 }
 
 function openYouTube(el, id, title) {
+
   setActive(el);
-  document.getElementById("youtubeFrame").src =
-    "https://www.youtube.com/embed/" + id + "?autoplay=1";
+
+  unlocked = false;
+
   document.getElementById("videoTitle").textContent = title;
+
+  document.getElementById("playerContainer").innerHTML = `
+    <iframe
+      id="youtubeFrame"
+      src="https://www.youtube.com/embed/${id}?enablejsapi=1&autoplay=1&rel=0"
+      allow="autoplay"
+      allowfullscreen>
+    </iframe>
+  `;
+
   document.getElementById("videoModal").style.display = "flex";
+
+  setTimeout(() => {
+
+    player = new YT.Player('youtubeFrame');
+
+    clearInterval(checkInterval);
+
+    checkInterval = setInterval(() => {
+
+      if (!player || unlocked) return;
+
+      try {
+
+        let currentTime = player.getCurrentTime();
+
+        if (currentTime >= FREE_TIME) {
+
+          player.pauseVideo();
+
+          let pass = prompt("Please enter password to continue watching:");
+
+          if (pass === VIDEO_PASSWORD) {
+
+            unlocked = true;
+
+            player.playVideo();
+
+          } else {
+
+            alert("Wrong password!");
+
+          }
+        }
+
+      } catch(err) {}
+
+    }, 1000);
+
+  }, 1500);
 }
 
 function closeVideo() {
-  document.getElementById("youtubeFrame").src = "";
+
+  clearInterval(checkInterval);
+
+  if (player) {
+    try {
+      player.stopVideo();
+    } catch(err) {}
+  }
+
+  document.getElementById("playerContainer").innerHTML = `
+    <iframe id="youtubeFrame" allowfullscreen></iframe>
+  `;
+
   document.getElementById("videoModal").style.display = "none";
 }
 
 document.addEventListener("click", function(e) {
-  if (!e.target.closest(".lesson") && !e.target.closest(".video-modal")) {
+
+  if (
+    !e.target.closest(".lesson") &&
+    !e.target.closest(".video-modal")
+  ) {
     clearActive();
   }
+
 });
+
 </script>
 
 </body>
