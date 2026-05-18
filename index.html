@@ -254,9 +254,47 @@ header p {
 
 <script>
 
-const VIDEO_PASSWORD = "sbv123";
+const lessonPasswords = {
+
+  // LESSON 1
+  "whfG3MjePVU": "L1P1",
+  "gomSB3L3IJo": "L1P2",
+  "VrMEaYyyUPA": "L1P3",
+
+  // LESSON 2
+  "bw_icQXOIHM": "L2P1",
+  "xQRr-tfaF6Y": "L2P2",
+  "2ZQuPcBrqNA": "L2P3",
+  "1jLoLjJRjTU": "L2P4",
+  "M_aoviIoHok": "L2P5",
+
+  // LESSON 3
+  "q3Ke2Y4asdo": "L3P1",
+  "1wp68WWpH_Q": "L3P2",
+  "xWZANUhkaAk": "L3P3",
+
+  // LESSON 4
+  "lSPzjQiG-XU": "L4P1",
+  "HsZ-JT_rojs": "L4P2",
+  "lwL2kcAP74M": "L4P3",
+
+  // LESSON 5
+  "SuqFHtxwazo": "L5P1",
+  "MOoH9_gAtek": "L5P2",
+  "f4auTGTtJYM": "L5P3",
+  "dGKVJTv5QlQ": "L5P4",
+  "6gCty01S0V0": "L5P5",
+
+  // LESSON 6
+  "c4HyWOptOvI": "L6P1",
+  "qHIbMRyVwlY": "L6P2",
+  "lrJi3KLBuEw": "L6P3",
+  "ZSuFt7K412Q": "L6P4",
+  "muMLgVTX2yY": "L6P5"
+};
 
 function setActive(el) {
+
   document.querySelectorAll(".part-title").forEach(e => {
     e.classList.remove("active");
   });
@@ -265,6 +303,7 @@ function setActive(el) {
 }
 
 function clearActive() {
+
   document.querySelectorAll(".part-title").forEach(el => {
     el.classList.remove("active");
   });
@@ -272,11 +311,13 @@ function clearActive() {
 
 function openYouTube(el, id, title) {
 
+  const correctPassword = lessonPasswords[id];
+
   const pass = prompt(
     "Please enter password to watch this lesson:"
   );
 
-  if (pass !== VIDEO_PASSWORD) {
+  if (pass !== correctPassword) {
 
     alert("Wrong password!");
 
